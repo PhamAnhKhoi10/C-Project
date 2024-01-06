@@ -122,26 +122,6 @@ int main(void)
 
     system("cls");
 
-    //ENTER để qua màn
-    printf("CONGRATULATION\n");
-    printf("Completed round 1, enter to play round 2\n");
-    
-    char press;
-    scanf("%c", press);
-
-    system("cls");
-
-    /* Màn 2
-    while(sentinel == 2)
-    {
-
-    }
-
-    Màn 3
-    while(sentinel == 3)
-    {
-
-    }*/
 }
 
 
