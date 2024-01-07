@@ -6,10 +6,10 @@
 #include <Windows.h>
 
 
-#define TOP_WALL 3
-#define BOTTOM_WALL 23
+#define TOP_WALL 2
+#define BOTTOM_WALL 22
 #define LEFT_WALL 3
-#define RIGHT_WALL 83
+#define RIGHT_WALL 43
 #define LOSE false
 #define WIN 10
 #define KEY_NONE -1
@@ -59,8 +59,10 @@ int main(void)
 
     //Tọa độ ban đầu của pacman
     coordinate pacman;
-    pacman.x = 43;
-    pacman.y = 13;
+    pacman.x = LEFT_WALL + 1;
+    pacman.y = TOP_WALL + 1;
+
+    // ghost 
 
     //Xóa màn hình cho gọn
     system("cls");
@@ -78,7 +80,7 @@ int main(void)
     coordinate eat_me = place_eat_me();
     gotoXY(eat_me.x, eat_me.y);
     printf("\033[0;36m");
-    printf("●");
+    printf("❀");
 
     print_gate(gate1);
     print_gate(gate2);
@@ -101,7 +103,7 @@ int main(void)
             eat_me = place_eat_me();
             gotoXY(eat_me.x, eat_me.y);
             printf("\033[0;36m");
-    		printf("●");
+    		printf("❀");
         }
 
         //Xử lý thua
@@ -209,9 +211,6 @@ void teleport(coordinate *cursor_pacman)
     }
 }
 
-void block(void)
-{
-}
 
 void print_wall(void)
 {
@@ -238,23 +237,63 @@ void print_wall(void)
     printf("╝");
     gotoXY(RIGHT_WALL,TOP_WALL);
     printf("╗");
+
+    int collumn = (LEFT_WALL + RIGHT_WALL) / 10;
+    int row = (TOP_WALL + BOTTOM_WALL) / 10;
+
+    for (int i = TOP_WALL + row; i <= BOTTOM_WALL - row; i += row)
+    {
+        for (int j = LEFT_WALL + collumn; j <= RIGHT_WALL - collumn; j += collumn)
+        {
+            gotoXY(j, i);
+            printf("✛");
+        }
+    }
 }
 
 
 coordinate place_eat_me(void)
 {
     coordinate eat_me;
+    bool changed = false;
 
     srand(time(NULL));
     eat_me.x = LEFT_WALL + 1 + rand() % (RIGHT_WALL - LEFT_WALL - 1);
     eat_me.y = TOP_WALL + 1 + rand() % (BOTTOM_WALL - TOP_WALL - 1);
+
+    int collumn = (LEFT_WALL + RIGHT_WALL) / 10;
+    int row = (TOP_WALL + BOTTOM_WALL) / 10;
+    
+    for (int i = TOP_WALL + row; i <= BOTTOM_WALL - row; i += row)
+    {
+        for (int j = LEFT_WALL + collumn; j <= RIGHT_WALL - collumn; j += collumn)
+        {
+            while (eat_me.x == j && eat_me.y == i)
+            {
+                eat_me.x = LEFT_WALL + 1 + rand() % (RIGHT_WALL - LEFT_WALL - 1);
+                eat_me.y = TOP_WALL + 1 + rand() % (BOTTOM_WALL - TOP_WALL - 1);
+                changed = true;
+            }
+
+            if (changed)
+            {
+                break;
+            }
+        }
+
+        if (changed)
+        {
+            break;
+            
+        }
+    }
 
     return eat_me;
 }
 
 void point(void)
 {
-    gotoXY(3, 26);
+    gotoXY(RIGHT_WALL + 5, TOP_WALL + 2);
     printf("POINTS: %i", pts);
 }
 
@@ -270,6 +309,20 @@ bool lose(coordinate pacman)
     if (pacman.x == LEFT_WALL || pacman.x == RIGHT_WALL || pacman.y == TOP_WALL || pacman.y == BOTTOM_WALL)
     {
         return false;
+    }
+
+    int collumn = (LEFT_WALL + RIGHT_WALL) / 10;
+    int row = (TOP_WALL + BOTTOM_WALL) / 10;
+
+    for (int i = TOP_WALL + row; i <= BOTTOM_WALL - row; i += row)
+    {
+        for (int j = LEFT_WALL + collumn; j <= RIGHT_WALL - collumn; j += collumn)
+        {
+            if (pacman.x == j && pacman.y == i)
+            {
+                return false;
+            }
+        }
     }
     return true;
 }
