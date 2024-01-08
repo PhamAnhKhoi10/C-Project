@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <conio.h>
 #include <Windows.h>
+#include <chrono>
+#include <thread>
 
 
 #define TOP_WALL 2
@@ -28,7 +30,7 @@ class ghost
     int y;
     void wait(void)
     {
-        Sleep(20);
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 };
 
@@ -59,8 +61,6 @@ coordinate gate4;
 ghost ghost_prime1;
 ghost ghost_prime2;
 ghost ghost_prime3;
-ghost ghost_prime4;
-ghost ghost_prime5;
 
 int main(void)
 { 	
@@ -514,8 +514,3 @@ void setTextColor(int color)
 {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
-
-
-
-
-
