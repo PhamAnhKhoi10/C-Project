@@ -45,13 +45,14 @@ void print_wall(void);
 void print_gate(coordinate gate);
 void teleport(coordinate *cursor_pacman);
 void noCursorType();
-void print_ghost(ghost *ghost_prime);
+void print_ghost(ghost *ghost_prime, coordinate eat_me);
+void print_ghost2(ghost *ghost_prime, coordinate eat_me);
 void _case_ghost_(coordinate eat_me);
 
 int pts = 0;
 int sentinel = 1;
 bool moveUp = false;
-bool moveLeft = true;
+bool moveLeft = false;
 
 coordinate gate1;
 coordinate gate2;
@@ -89,8 +90,8 @@ int main(void)
     ghost_prime2.x = LEFT_WALL + 6 + 5 * (LEFT_WALL + RIGHT_WALL) / 10;
     ghost_prime2.y = BOTTOM_WALL - 1;
 
-    ghost_prime3.x = LEFT_WALL + 6 + 3 * (LEFT_WALL + RIGHT_WALL) / 10;
-    ghost_prime3.y = BOTTOM_WALL - 1;
+    ghost_prime3.x = LEFT_WALL + 1;
+    ghost_prime3.y = TOP_WALL + 6 + 3 * (TOP_WALL + BOTTOM_WALL) / 10;
     //Xóa màn hình cho gọn
     system("cls");
 
@@ -117,11 +118,9 @@ int main(void)
     while (sentinel == 1)
     {
         
-        print_ghost(&ghost_prime1);
-        print_ghost(&ghost_prime2);
-        print_ghost(&ghost_prime3);
-        _case_ghost_(eat_me);
-        
+        print_ghost(&ghost_prime1, eat_me);
+        print_ghost(&ghost_prime2, eat_me);
+        print_ghost2(&ghost_prime3, eat_me);
         noCursorType();
 
         //Chuyển hướng & di chuyển
@@ -260,9 +259,16 @@ void _case_ghost_(coordinate eat_me)
         printf("\033[0;36m");
         printf("❀");
     }
+
+    if(eat_me.x == ghost_prime3.x && eat_me.y == ghost_prime3.y)
+    {
+        gotoXY(eat_me.x, eat_me.y);
+        printf("\033[0;36m");
+        printf("❀");
+    }
 }
 
-void print_ghost(ghost *ghost_prime)
+void print_ghost(ghost *ghost_prime, coordinate eat_me)
 {
      // Add this line outside the game loop
 
@@ -279,6 +285,7 @@ void print_ghost(ghost *ghost_prime)
     ghost_prime->wait();
     gotoXY(ghost_prime->x, ghost_prime->y);
     printf(" ");
+    _case_ghost_(eat_me);
 
     if (moveUp) {
         ghost_prime->y--; // Move up
@@ -288,6 +295,29 @@ void print_ghost(ghost *ghost_prime)
     }   
 }
 
+void print_ghost2(ghost *ghost_prime, coordinate eat_me)
+{
+    if (ghost_prime->x == LEFT_WALL + 1) {
+        moveLeft = false;
+    }
+    else if (ghost_prime->x == RIGHT_WALL - 1) {
+        moveLeft = true; 
+    }
+
+    gotoXY(ghost_prime->x, ghost_prime->y);
+    printf("☻");
+    ghost_prime->wait();
+    gotoXY(ghost_prime->x, ghost_prime->y);
+    printf(" ");
+    _case_ghost_(eat_me);
+
+    if (moveLeft) {
+        ghost_prime->x--; 
+    }
+    else {
+        ghost_prime->x++;
+    }   
+}
 
 void print_wall(void)
 {
@@ -386,6 +416,19 @@ bool lose(coordinate pacman)
                 return false;
             }
         }
+    }
+
+    if (pacman.x == ghost_prime1.x && pacman.y == ghost_prime1.y)
+    {
+        return false;
+    }
+    if (pacman.x == ghost_prime2.x && pacman.y == ghost_prime2.y)
+    {
+        return false;
+    }
+    if (pacman.x == ghost_prime3.x && pacman.y == ghost_prime3.y)
+    {
+        return false;
     }
     return true;
 }
