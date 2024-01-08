@@ -288,32 +288,6 @@ void print_ghost(ghost *ghost_prime)
     }   
 }
 
-// void print_ghost_hor(ghost *ghost_prime)
-// {
-//      // Add this line outside the game loop
-
-//     // Inside the game loop:
-//     if (ghost_prime->x == LEFT_WALL + 1) {
-//         moveLeft = false; 
-//     }
-//     else if (ghost_prime->x == RIGHT_WALL - 1) {
-//         moveLeft = true; 
-//     }
-
-//     gotoXY(ghost_prime->x, ghost_prime->y);
-//     printf("☻");
-//     ghost_prime->wait();
-//     gotoXY(ghost_prime->x, ghost_prime->y);
-//     printf(" ");
-
-//     if (moveLeft) {
-//         ghost_prime->x++; 
-//     }
-//     else {
-//         ghost_prime->x--; 
-//     }   
-// }
-
 
 void print_wall(void)
 {
@@ -514,3 +488,9 @@ void setTextColor(int color)
 {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
+
+
+
+
+
+
