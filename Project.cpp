@@ -7,13 +7,16 @@
 #include <chrono>
 #include <thread>
 
-
+#define MENU_TOP 2
+#define MENU_BOTTOM 22
+#define MENU_LEFT 15
+#define MENU_RIGHT 75
 #define TOP_WALL 2
 #define BOTTOM_WALL 22
 #define LEFT_WALL 3
-#define RIGHT_WALL 43
+#define RIGHT_WALL 63
 #define LOSE false
-#define WIN 10
+#define WIN 1
 #define KEY_NONE -1
 
 typedef struct
@@ -25,324 +28,464 @@ coordinate;
 
 class ghost
 {
-    public:
+public:
     int x;
     int y;
+    bool moveUp = false;
+    bool moveLeft = false;
+
     void wait(void)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(40));
     }
 };
 
-coordinate place_eat_me(void);
+coordinate foodPosition(void);
 int inputKey();
-bool lose(coordinate pacman);
-void gotoXY(int x, int y);
-void change_direction(coordinate* cursor_pacman);
-void print_pacman(void);
-void point(void);
-void print_wall(void);
-void print_gate(coordinate gate);
-void teleport(coordinate *cursor_pacman);
 void noCursorType();
-void print_ghost(ghost *ghost_prime, coordinate eat_me);
-void print_ghost2(ghost *ghost_prime, coordinate eat_me);
-void _case_ghost_(coordinate eat_me);
+void gotoXY(int x, int y);
+void changeDirection(coordinate* player);
+void printPlayer(void);
+void point(void);
+void printWall(void);
+void printGate(coordinate gate);
+void teleport(coordinate *player);
+void _case_(coordinate player);
+void _case_ghost_(coordinate food, ghost ghost_prime);
+void printGhost1(ghost *ghost_prime, coordinate food);
+void printGhost2(ghost *ghost_prime, coordinate food);
+void printGhost3(ghost *ghost_prime, coordinate food, int top, int bottom, int left, int right);
+void intruction();
+void play();
+bool lose(coordinate player);
 
 int pts = 0;
 int sentinel = 1;
-bool moveUp = false;
-bool moveLeft = false;
+bool congratulation = false;
 
 coordinate gate1;
 coordinate gate2;
 coordinate gate3;
 coordinate gate4;
 
-ghost ghost_prime1;
-ghost ghost_prime2;
-ghost ghost_prime3;
+ghost ghost1;
+ghost ghost2;
+ghost ghost3;
+ghost ghost4;
+ghost ghost5;
 
 int main(void)
 { 	
-    SetConsoleOutputCP(CP_UTF8);
-    gate1.x = LEFT_WALL + 4;
-    gate1.y = BOTTOM_WALL - 3;
+    while (true)
+    { 
+        system("cls");
+        SetConsoleOutputCP(CP_UTF8);
 
-    gate2.x = RIGHT_WALL - 4;
-    gate2.y = TOP_WALL + 3;
+        // Teleport gate
+        gate1.x = LEFT_WALL + 4;
+        gate1.y = BOTTOM_WALL - 3;
 
-    gate3.x = LEFT_WALL + 4;
-    gate3.y = TOP_WALL + 3;
+        gate2.x = RIGHT_WALL - 4;
+        gate2.y = TOP_WALL + 3;
 
-    gate4.x = RIGHT_WALL - 4;
-    gate4.y = BOTTOM_WALL - 3;
+        gate3.x = LEFT_WALL + 4;
+        gate3.y = TOP_WALL + 3;
 
-    //Tọa độ ban đầu của pacman
-    coordinate pacman;
-    pacman.x = LEFT_WALL + 1;
-    pacman.y = TOP_WALL + 1;
+        gate4.x = RIGHT_WALL - 4;
+        gate4.y = BOTTOM_WALL - 3;
 
-    // ghost 
-    ghost_prime1.x = LEFT_WALL + 6 + (LEFT_WALL + RIGHT_WALL) / 10;
-    ghost_prime1.y = BOTTOM_WALL - 1;
+        // Player
+        coordinate player;
+        player.x = LEFT_WALL + 3;
+        player.y = TOP_WALL + 3;
 
-    ghost_prime2.x = LEFT_WALL + 6 + 5 * (LEFT_WALL + RIGHT_WALL) / 10;
-    ghost_prime2.y = BOTTOM_WALL - 1;
+        // Ghost
+        ghost1.x = LEFT_WALL + 6 + (LEFT_WALL + RIGHT_WALL) / 10;
+        ghost1.y = BOTTOM_WALL - 1;
 
-    ghost_prime3.x = LEFT_WALL + 1;
-    ghost_prime3.y = TOP_WALL + 6 + 3 * (TOP_WALL + BOTTOM_WALL) / 10;
-    //Xóa màn hình cho gọn
-    system("cls");
+        ghost2.x = LEFT_WALL + 6 + 5 * (LEFT_WALL + RIGHT_WALL) / 10;
+        ghost2.y = BOTTOM_WALL - 1;
 
-    //In tường
-    print_wall();
+        ghost3.x = RIGHT_WALL - 1;
+        ghost3.y = BOTTOM_WALL - 5;
 
-    //In điểm
-    point();
+        ghost4.x = LEFT_WALL + 1;
+        ghost4.y = TOP_WALL + 5;
 
-    //In lần đầu;
-    gotoXY(pacman.x, pacman.y);
-    print_pacman();
+        ghost5.x = LEFT_WALL + 8 + 2 * (LEFT_WALL + RIGHT_WALL) / 10;
+        ghost5.y = BOTTOM_WALL - 1;
 
-    coordinate eat_me = place_eat_me();
-    gotoXY(eat_me.x, eat_me.y);
-    printf("\033[0;36m");
-    printf("❀");
+        //Menu
+        bool menu = true;
+        while(menu)
+        {
+            for (int i = MENU_LEFT; i <= MENU_RIGHT; i++)
+            {
+                gotoXY(i, MENU_TOP);
+                printf("%c", 219);
+                gotoXY(i, MENU_BOTTOM);
+                printf("%c", 219);
+            }
 
-    print_gate(gate1);
-    print_gate(gate2);
-    print_gate(gate3);
-    print_gate(gate4);
+            for (int i = MENU_TOP; i <= MENU_BOTTOM; i++)
+            {
+                gotoXY(MENU_LEFT, i);
+                printf("%c", 219);
+                gotoXY(MENU_RIGHT, i);
+                printf("%c", 219);
+            }
 
-    while (sentinel == 1)
-    {
+            for (int i = MENU_LEFT + 2; i < MENU_RIGHT - 1; i++)
+            {
+                gotoXY(i, MENU_TOP + 1);
+                printf("%c", 247);
+            }
+
+            for (int i = MENU_LEFT + 2; i < MENU_RIGHT - 1; i++)
+            {
+                gotoXY(i, MENU_BOTTOM - 1);
+                printf("%c", 247);
+            }
+
+            for (int i = MENU_LEFT + 10; i < MENU_RIGHT - 9; i++)
+            {
+                gotoXY(i, MENU_TOP + 4);
+                printf("%c", 254);
+            }
+
+            for (int i = MENU_LEFT + 12; i < MENU_RIGHT - 11; i++)
+            {
+                gotoXY(i, MENU_BOTTOM - 4);
+                printf("%c", 95);
+            }
+            
+            gotoXY(MENU_LEFT + 27 , MENU_TOP + 5);
+            printf("GAME MENU\n");
+            gotoXY(MENU_LEFT + 25 , MENU_TOP + 7);
+            printf("1. Play\n");
+            gotoXY(MENU_LEFT + 25 , MENU_TOP + 9);
+            printf("2. Instruction\n");
+            gotoXY(MENU_LEFT + 25 , MENU_TOP + 11);
+            printf("3. Exit\n");
+            gotoXY(MENU_LEFT + 25 , MENU_TOP + 13);
+            printf("Your choice: ");
+
+            int choice;
+            scanf("%i", &choice);
+            switch(choice)
+            {
+                case 1:
+                    play();
+                    menu = false;
+                    break;
+                case 2:
+                    intruction();
+                    break;
+                case 3:
+                    exit(0);
+                default:
+                    printf("Invalid choice");
+            }
+        }
+        system("cls");
+
+        // Wall
+        printWall();
+
+        //Point
+        point();
+
+        gotoXY(player.x, player.y);
+        printPlayer();
+
+        coordinate food = foodPosition();
+        gotoXY(food.x, food.y);
+        printf("\033[0;36m");
+        printf("❀");
+
+        printGate(gate1);
+        printGate(gate2);
+        printGate(gate3);
+        printGate(gate4);
+
         
-        print_ghost(&ghost_prime1, eat_me);
-        print_ghost(&ghost_prime2, eat_me);
-        print_ghost2(&ghost_prime3, eat_me);
-        noCursorType();
-
-        //Chuyển hướng & di chuyển
-        change_direction(&pacman);
-        teleport(&pacman);
-
-        //In mồi mới & update điểm
-        if (pacman.x == eat_me.x && pacman.y == eat_me.y)
+        while (sentinel == 1)
         {
-            pts++;
-            point();
+            printGhost3(&ghost1, food, TOP_WALL + 1, BOTTOM_WALL - 1, LEFT_WALL + 3 + (LEFT_WALL + RIGHT_WALL) / 10, RIGHT_WALL - 3 - (LEFT_WALL + RIGHT_WALL) / 10);
+            printGhost1(&ghost2, food);
+            printGhost2(&ghost3, food);
+            printGhost2(&ghost4, food);
+            printGhost1(&ghost5, food);
 
-            eat_me = place_eat_me();
-            gotoXY(eat_me.x, eat_me.y);
-            printf("\033[0;36m");
-    		printf("❀");
+            noCursorType();
+
+            // Movement
+            changeDirection(&player);
+            teleport(&player);
+
+            // Point & Eat food
+            if (player.x == food.x && player.y == food.y)
+            {
+                pts++;
+                point();
+
+                food = foodPosition();
+                gotoXY(food.x, food.y);
+                printf("\033[0;36m");
+                printf("❀");
+            }
+
+            // if (lose(player) == LOSE)
+            // {
+            //     system("cls");
+            //     printf("GAME OVER\n");
+            //     printf("Press any key to continue...");
+            //     getchar();
+            //     break;
+            // }
+
+            // Win
+            if (pts == WIN)
+            {   
+                system("cls");  
+                congratulation = true;
+                pts = 0;
+                sentinel = 2;
+            }
         }
 
-        //Xử lý thua
-        if (lose(pacman) == LOSE)
+        while(congratulation)
         {
-            system("cls");
-            printf("GAME OVER\n");
-            return 1;
+            printf("CONGRATULATION\n");
+            printf("Press any key to continue...");
+            getchar();
+            congratulation = false;
         }
 
-        //Phá đảo màn
-        if (pts == WIN)
-        {
-            pts = 0;
-            sentinel = 2;
-        }
+        system("cls");
     }
-
-    system("cls");
-
 }
 
-
-void print_gate(coordinate gate)
+void printGate(coordinate gate)
 {	printf("\033[0;32m");
     gotoXY(gate.x, gate.y);
     printf("▓");
 }
 
-void _case_(coordinate pacman)
+void _case_(coordinate player)
 {
-    if(gate1.x == pacman.x && gate1.y == pacman.y)
+    if(gate1.x == player.x && gate1.y == player.y)
     {
-        print_gate(gate1);
+        printGate(gate1);
     }
 
-    if(gate2.x == pacman.x && gate2.y == pacman.y)
+    if(gate2.x == player.x && gate2.y == player.y)
     {
-        print_gate(gate2);
+        printGate(gate2);
     }
 
-    if(gate3.x == pacman.x && gate3.y == pacman.y)
+    if(gate3.x == player.x && gate3.y == player.y)
     {
-        print_gate(gate3);
+        printGate(gate3);
     }
 
-    if(gate4.x == pacman.x && gate4.y == pacman.y)
+    if(gate4.x == player.x && gate4.y == player.y)
     {
-        print_gate(gate4);
+        printGate(gate4);
     }
 }
 
-void teleport(coordinate *cursor_pacman)
+void teleport(coordinate *player)
 {
-    if(cursor_pacman->x == gate1.x && cursor_pacman->y == gate1.y)
+    if(player->x == gate1.x && player->y == gate1.y)
     {
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
+        gotoXY(player->x, player->y);
         printf(" ");
-        _case_(*cursor_pacman);
+        _case_(*player);
 
-        cursor_pacman->x = gate2.x + 1;
-        cursor_pacman->y = gate2.y;
+        player->x = gate2.x - 1;
+        player->y = gate2.y;
 
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
-        print_pacman();
+        gotoXY(player->x, player->y);
+        printPlayer();
     }
 
-    if(cursor_pacman->x == gate2.x && cursor_pacman->y == gate2.y)
+    if(player->x == gate2.x && player->y == gate2.y)
     {
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
+        gotoXY(player->x, player->y);
         printf(" ");
-        _case_(*cursor_pacman);
+        _case_(*player);
 
-        cursor_pacman->x = gate3.x + 1;
-        cursor_pacman->y = gate3.y;
+        player->x = gate3.x + 1;
+        player->y = gate3.y;
 
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
-        print_pacman();
+        gotoXY(player->x, player->y);
+        printPlayer();
     }
 
-    if(cursor_pacman->x == gate3.x && cursor_pacman->y == gate3.y)
+    if(player->x == gate3.x && player->y == gate3.y)
     {
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
+        gotoXY(player->x, player->y);
         printf(" ");
-        _case_(*cursor_pacman);
+        _case_(*player);
 
-        cursor_pacman->x = gate4.x + 1;
-        cursor_pacman->y = gate4.y;
+        player->x = gate4.x - 1;
+        player->y = gate4.y;
 
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
-        print_pacman();
+        gotoXY(player->x, player->y);
+        printPlayer();
     }
 
-    if(cursor_pacman->x == gate4.x && cursor_pacman->y == gate4.y)
+    if(player->x == gate4.x && player->y == gate4.y)
     {
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
+        gotoXY(player->x, player->y);
         printf(" ");
-        _case_(*cursor_pacman);
+        _case_(*player);
 
-        cursor_pacman->x = gate1.x + 1;
-        cursor_pacman->y = gate1.y;
+        player->x = gate1.x + 1;
+        player->y = gate1.y;
 
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
-        print_pacman();
+        gotoXY(player->x, player->y);
+        printPlayer();
     }
 }
 
-void _case_ghost_(coordinate eat_me)
+void _case_ghost_(coordinate food, ghost ghost_prime)
 {
-    if(eat_me.x == ghost_prime1.x && eat_me.y == ghost_prime1.y)
+    if(food.x == ghost_prime.x && food.y == ghost_prime.y)
     {
-        gotoXY(eat_me.x, eat_me.y);
+        gotoXY(food.x, food.y);
         printf("\033[0;36m");
         printf("❀");
     }
 
-    if(eat_me.x == ghost_prime2.x && eat_me.y == ghost_prime2.y)
-    {
-        gotoXY(eat_me.x, eat_me.y);
-        printf("\033[0;36m");
-        printf("❀");
-    }
-
-    if(eat_me.x == ghost_prime3.x && eat_me.y == ghost_prime3.y)
-    {
-        gotoXY(eat_me.x, eat_me.y);
-        printf("\033[0;36m");
-        printf("❀");
-    }
 }
 
-void print_ghost(ghost *ghost_prime, coordinate eat_me)
+void printGhost1(ghost *ghost_prime, coordinate food)
 {
-     // Add this line outside the game loop
-
-    // Inside the game loop:
     if (ghost_prime->y == TOP_WALL + 1) {
-        moveUp = false; // Start moving down
+        ghost_prime->moveUp = false; 
     }
     else if (ghost_prime->y == BOTTOM_WALL - 1) {
-        moveUp = true; // Start moving up
+        ghost_prime->moveUp = true;
     }
 
     gotoXY(ghost_prime->x, ghost_prime->y);
     printf("☻");
-    ghost_prime->wait();
     gotoXY(ghost_prime->x, ghost_prime->y);
     printf(" ");
-    _case_ghost_(eat_me);
+    _case_ghost_(food, *ghost_prime);
 
-    if (moveUp) {
-        ghost_prime->y--; // Move up
+    if (ghost_prime->moveUp) {
+        ghost_prime->y--;
     }
     else {
-        ghost_prime->y++; // Move down
+        ghost_prime->y++;
     }   
+
+    gotoXY(ghost_prime->x, ghost_prime->y);
+    printf("☻");
+    ghost_prime->wait();
 }
 
-void print_ghost2(ghost *ghost_prime, coordinate eat_me)
+void printGhost2(ghost *ghost_prime, coordinate food)
 {
     if (ghost_prime->x == LEFT_WALL + 1) {
-        moveLeft = false;
+        ghost_prime->moveLeft = false;
     }
     else if (ghost_prime->x == RIGHT_WALL - 1) {
-        moveLeft = true; 
+        ghost_prime->moveLeft = true; 
     }
 
     gotoXY(ghost_prime->x, ghost_prime->y);
     printf("☻");
-    ghost_prime->wait();
     gotoXY(ghost_prime->x, ghost_prime->y);
     printf(" ");
-    _case_ghost_(eat_me);
+    _case_ghost_(food, *ghost_prime);
 
-    if (moveLeft) {
-        ghost_prime->x--; 
+    if (ghost_prime->moveLeft) 
+    {
+        ghost_prime->x--;
     }
-    else {
+    else 
+    {
         ghost_prime->x++;
     }   
+    gotoXY(ghost_prime->x, ghost_prime->y);
+    printf("☻");
 }
 
-void print_wall(void)
+void printGhost3(ghost *ghost_prime, coordinate food, int top, int bottom, int left, int right)
+{
+    static int direction = 0; 
+
+    gotoXY(ghost_prime->x, ghost_prime->y);
+    printf(" ");
+    _case_ghost_(food, *ghost_prime);
+
+    if (ghost_prime->x == right && direction == 0) 
+    {
+        direction = 3;
+    }
+    else if (ghost_prime->y == bottom && direction == 1) 
+    {
+        direction = 0;
+    }
+    else if (ghost_prime->x == left && direction == 2) 
+    {
+        direction = 1;
+    }
+    else if (ghost_prime->y == top && direction == 3) 
+    {
+        direction = 2;
+    }
+
+    switch (direction) {
+        case 0: // moving right
+            ghost_prime->x++;
+            break;
+        case 1: // moving down
+            ghost_prime->y++;
+            break;
+        case 2: // moving left
+            ghost_prime->x--;
+            break;
+        case 3: // moving up
+            ghost_prime->y--;
+            break;
+    }
+    gotoXY(ghost_prime->x, ghost_prime->y);
+    printf("☻");
+}
+
+
+void printWall(void)
 {
    printf("\033[0;34m");
-    //draw TOP_WALL
-    for(int i=LEFT_WALL+1; i<= (RIGHT_WALL-1); i++){
-        gotoXY(i,TOP_WALL);
+
+    for(int i = LEFT_WALL + 1; i <= RIGHT_WALL - 1; i++)
+    {
+        gotoXY(i, TOP_WALL);
         printf("═");
-        gotoXY(i,BOTTOM_WALL);
+        gotoXY(i, BOTTOM_WALL);
         printf("═");
     }
-    //draw LEFT_WALL
-    for(int j=TOP_WALL+1; j<=(BOTTOM_WALL-1);j++){
-        gotoXY(LEFT_WALL,j);
+
+    for(int j = TOP_WALL + 1; j <= BOTTOM_WALL - 1; j++)
+    {
+        gotoXY(LEFT_WALL, j);
         printf("║\n");
-        gotoXY(RIGHT_WALL,j);
+        gotoXY(RIGHT_WALL, j);
         printf("║\n");
     }
-    gotoXY(LEFT_WALL,TOP_WALL);
+
+    gotoXY(LEFT_WALL, TOP_WALL);
     printf("╔");
-    gotoXY(LEFT_WALL,BOTTOM_WALL);
+    gotoXY(LEFT_WALL, BOTTOM_WALL);
     printf("╚");
-    gotoXY(RIGHT_WALL,BOTTOM_WALL);
+    gotoXY(RIGHT_WALL, BOTTOM_WALL);
     printf("╝");
-    gotoXY(RIGHT_WALL,TOP_WALL);
+    gotoXY(RIGHT_WALL, TOP_WALL);
     printf("╗");
 
     int collumn = (LEFT_WALL + RIGHT_WALL) / 10;
@@ -358,13 +501,13 @@ void print_wall(void)
     }
 }
 
-coordinate place_eat_me(void)
+coordinate foodPosition(void)
 {
-    coordinate eat_me;
+    coordinate food;
 
     srand(time(NULL));
-    eat_me.x = LEFT_WALL + 1 + rand() % (RIGHT_WALL - LEFT_WALL - 1);
-    eat_me.y = TOP_WALL + 1 + rand() % (BOTTOM_WALL - TOP_WALL - 1);
+    food.x = LEFT_WALL + 1 + rand() % (RIGHT_WALL - LEFT_WALL - 1);
+    food.y = TOP_WALL + 1 + rand() % (BOTTOM_WALL - TOP_WALL - 1);
 
     int collumn = (LEFT_WALL + RIGHT_WALL) / 10;
     int row = (TOP_WALL + BOTTOM_WALL) / 10;
@@ -373,15 +516,15 @@ coordinate place_eat_me(void)
     {
         for (int j = LEFT_WALL + collumn; j <= RIGHT_WALL - collumn; j += collumn)
         {
-            while ((eat_me.x == j && eat_me.y == i) || (eat_me.x == gate1.x && eat_me.y == gate1.y) || (eat_me.x == gate2.x && eat_me.y == gate2.y) || (eat_me.x == gate3.x && eat_me.y == gate3.y) || (eat_me.x == gate4.x && eat_me.y == gate4.y))
+            while ((food.x == j && food.y == i) || (food.x == gate1.x && food.y == gate1.y) || (food.x == gate2.x && food.y == gate2.y) || (food.x == gate3.x && food.y == gate3.y) || (food.x == gate4.x && food.y == gate4.y))
             {
-                eat_me.x = LEFT_WALL + 1 + rand() % (RIGHT_WALL - LEFT_WALL - 1);
-                eat_me.y = TOP_WALL + 1 + rand() % (BOTTOM_WALL - TOP_WALL - 1);
+                food.x = LEFT_WALL + 1 + rand() % (RIGHT_WALL - LEFT_WALL - 1);
+                food.y = TOP_WALL + 1 + rand() % (BOTTOM_WALL - TOP_WALL - 1);
             }
         }
     }
 
-    return eat_me;
+    return food;
 }
 
 void point(void)
@@ -390,16 +533,16 @@ void point(void)
     printf("POINTS: %i", pts);
 }
 
-void print_pacman(void)
+void printPlayer(void)
 {
 	noCursorType();
     printf("\033[0;33m");
     printf("♛");
 }
 
-bool lose(coordinate pacman)
+bool lose(coordinate player)
 {
-    if (pacman.x == LEFT_WALL || pacman.x == RIGHT_WALL || pacman.y == TOP_WALL || pacman.y == BOTTOM_WALL)
+    if (player.x == LEFT_WALL || player.x == RIGHT_WALL || player.y == TOP_WALL || player.y == BOTTOM_WALL)
     {
         return false;
     }
@@ -411,82 +554,84 @@ bool lose(coordinate pacman)
     {
         for (int j = LEFT_WALL + collumn; j <= RIGHT_WALL - collumn; j += collumn)
         {
-            if (pacman.x == j && pacman.y == i)
+            if (player.x == j && player.y == i)
             {
                 return false;
             }
         }
     }
 
-    if (pacman.x == ghost_prime1.x && pacman.y == ghost_prime1.y)
+    if (player.x == ghost1.x && player.y == ghost1.y)
     {
         return false;
     }
-    if (pacman.x == ghost_prime2.x && pacman.y == ghost_prime2.y)
+    if (player.x == ghost2.x && player.y == ghost2.y)
     {
         return false;
     }
-    if (pacman.x == ghost_prime3.x && pacman.y == ghost_prime3.y)
+    if (player.x == ghost3.x && player.y == ghost3.y)
+    {
+        return false;
+    }
+    if (player.x == ghost4.x && player.y == ghost4.y)
+    {
+        return false;
+    }
+    if (player.x == ghost5.x && player.y == ghost5.y)
     {
         return false;
     }
     return true;
 }
 
-void change_direction(coordinate* cursor_pacman)
+void changeDirection(coordinate* player)
 {
    int key = tolower(inputKey());
     if (key == 'a')
     {
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
+        gotoXY(player->x, player->y);
         printf(" ");
 
-        cursor_pacman->x--;
+        player->x--;
 
-        //In pacman mới
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
-        print_pacman();
+        gotoXY(player->x, player->y);
+        printPlayer();
 
     }
     else if (key == 'd')
     {
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
+        gotoXY(player->x, player->y);
         printf(" ");
 
-        cursor_pacman->x++;
+        player->x++;
 
-        //In pacman mới
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
-        print_pacman();
+        gotoXY(player->x, player->y);
+        printPlayer();
 
     }
     else if (key == 'w')
     {
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
+        gotoXY(player->x, player->y);
         printf(" ");
 
-        cursor_pacman->y--;
-
-        //In pacman mới
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
-        print_pacman();
+        player->y--;
+        gotoXY(player->x, player->y);
+        printPlayer();
 
     }
     else if (key == 's')
     {
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
+        gotoXY(player->x, player->y);
         printf(" ");
 
-        cursor_pacman->y++;
+        player->y++;
 
-        //In pacman mới
-        gotoXY(cursor_pacman->x, cursor_pacman->y);
-        print_pacman();
+        gotoXY(player->x, player->y);
+        printPlayer();
 
     }
 
 }
-
 
 int inputKey()
 {
@@ -511,6 +656,27 @@ int inputKey()
 }
 
 
+void intruction()
+{
+    system("cls");
+    printf("Instruction\n");
+    printf("Press any key to continue...");
+    getchar();
+    getchar();
+    system("cls");
+}
+
+void play()
+{
+    system("cls");
+    printf("Play\n");
+    printf("Press any key to continue...");
+    getchar();
+    getchar();
+    system("cls");
+}
+
+
 void gotoXY(int x, int y)
 {
     COORD coord;
@@ -527,10 +693,10 @@ void noCursorType()
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
 }
 
-void setTextColor(int color)
-{
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
-}
+// void setTextColor(int color)
+// {
+//     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+// }
 
 
 
