@@ -36,7 +36,7 @@ public:
 
     void wait(void)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(40));
+        std::this_thread::sleep_for(std::chrono::milliseconds(17));
     }
 };
 
@@ -60,7 +60,7 @@ void play();
 bool lose(coordinate player);
 
 int pts = 0;
-int sentinel = 1;
+bool play_game = false;
 bool congratulation = false;
 
 coordinate gate1;
@@ -73,12 +73,13 @@ ghost ghost2;
 ghost ghost3;
 ghost ghost4;
 ghost ghost5;
+ghost ghost6;
+ghost ghost7;
 
 int main(void)
 { 	
     while (true)
     { 
-        system("cls");
         SetConsoleOutputCP(CP_UTF8);
 
         // Teleport gate
@@ -96,8 +97,8 @@ int main(void)
 
         // Player
         coordinate player;
-        player.x = LEFT_WALL + 3;
-        player.y = TOP_WALL + 3;
+        player.x = LEFT_WALL + 9;
+        player.y = TOP_WALL + 9;
 
         // Ghost
         ghost1.x = LEFT_WALL + 6 + (LEFT_WALL + RIGHT_WALL) / 10;
@@ -115,10 +116,18 @@ int main(void)
         ghost5.x = LEFT_WALL + 8 + 2 * (LEFT_WALL + RIGHT_WALL) / 10;
         ghost5.y = BOTTOM_WALL - 1;
 
+        ghost6.x = LEFT_WALL + 3;
+        ghost6.y = TOP_WALL + 1;
+
+        ghost7.x = RIGHT_WALL - 3;
+        ghost7.y = TOP_WALL + 1;
+
+
         //Menu
         bool menu = true;
         while(menu)
         {
+            system("cls");
             for (int i = MENU_LEFT; i <= MENU_RIGHT; i++)
             {
                 gotoXY(i, MENU_TOP);
@@ -177,6 +186,7 @@ int main(void)
                 case 1:
                     play();
                     menu = false;
+                    play_game = true;
                     break;
                 case 2:
                     intruction();
@@ -184,7 +194,11 @@ int main(void)
                 case 3:
                     exit(0);
                 default:
-                    printf("Invalid choice");
+                    system("cls");
+                    printf("Invalid choice\n");
+                    printf("Press any key to continue...");
+                    getchar();
+                    getchar();
             }
         }
         system("cls");
@@ -209,13 +223,15 @@ int main(void)
         printGate(gate4);
 
         
-        while (sentinel == 1)
+        while (play)
         {
             printGhost3(&ghost1, food, TOP_WALL + 1, BOTTOM_WALL - 1, LEFT_WALL + 3 + (LEFT_WALL + RIGHT_WALL) / 10, RIGHT_WALL - 3 - (LEFT_WALL + RIGHT_WALL) / 10);
             printGhost1(&ghost2, food);
             printGhost2(&ghost3, food);
             printGhost2(&ghost4, food);
             printGhost1(&ghost5, food);
+            printGhost1(&ghost6, food);
+            printGhost1(&ghost7, food);
 
             noCursorType();
 
@@ -250,7 +266,7 @@ int main(void)
                 system("cls");  
                 congratulation = true;
                 pts = 0;
-                sentinel = 2;
+                play_game = false;
             }
         }
 
@@ -303,7 +319,7 @@ void teleport(coordinate *player)
         printf(" ");
         _case_(*player);
 
-        player->x = gate2.x - 1;
+        player->x = gate2.x + 1;
         player->y = gate2.y;
 
         gotoXY(player->x, player->y);
@@ -316,7 +332,7 @@ void teleport(coordinate *player)
         printf(" ");
         _case_(*player);
 
-        player->x = gate3.x + 1;
+        player->x = gate3.x - 1;
         player->y = gate3.y;
 
         gotoXY(player->x, player->y);
@@ -329,7 +345,7 @@ void teleport(coordinate *player)
         printf(" ");
         _case_(*player);
 
-        player->x = gate4.x - 1;
+        player->x = gate4.x + 1;
         player->y = gate4.y;
 
         gotoXY(player->x, player->y);
@@ -342,7 +358,7 @@ void teleport(coordinate *player)
         printf(" ");
         _case_(*player);
 
-        player->x = gate1.x + 1;
+        player->x = gate1.x - 1;
         player->y = gate1.y;
 
         gotoXY(player->x, player->y);
@@ -577,10 +593,15 @@ bool lose(coordinate player)
     {
         return false;
     }
-    if (player.x == ghost5.x && player.y == ghost5.y)
+    if (player.x == ghost7.x && player.y == ghost7.y)
     {
         return false;
     }
+    if (player.x == ghost7.x && player.y == ghost7.y)
+    {
+        return false;
+    }
+    
     return true;
 }
 
@@ -659,8 +680,16 @@ int inputKey()
 void intruction()
 {
     system("cls");
-    printf("Instruction\n");
-    printf("Press any key to continue...");
+    printf("Instruction\n\n");
+    printf("Press \"a\" to move left\n");
+    printf("Press \"d\" to move right\n");
+    printf("Press \"w\" to move up\n");
+    printf("Press \"s\" to move down\n\n");
+    printf("There are four teleport gates in the game, use them to switch your position\n");
+    printf("You have to collect the food. When you reach 10 points, you will win\n");
+    printf("If you touch the ghost or the wall and the barrier, you will lose\n\n");
+    printf("Good luck!\n\n");
+    printf("Press ENTER to continue...");
     getchar();
     getchar();
     system("cls");
@@ -670,7 +699,7 @@ void play()
 {
     system("cls");
     printf("Play\n");
-    printf("Press any key to continue...");
+    printf("Press ENTER to continue...");
     getchar();
     getchar();
     system("cls");
