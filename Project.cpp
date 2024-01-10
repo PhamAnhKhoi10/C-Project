@@ -7,10 +7,10 @@
 #include <chrono>
 #include <thread>
 
-#define MENU_TOP 2
+#define MENU_TOP 2 
 #define MENU_BOTTOM 22
-#define MENU_LEFT 15
-#define MENU_RIGHT 75
+#define MENU_LEFT 22
+#define MENU_RIGHT 82
 #define TOP_WALL 2
 #define BOTTOM_WALL 22
 #define LEFT_WALL 3
@@ -80,7 +80,7 @@ int main(void)
 { 	
     while (true)
     { 
-        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleOutputCP(65001);
 
         // Teleport gate
         gate1.x = LEFT_WALL + 4;
@@ -128,38 +128,39 @@ int main(void)
         while(menu)
         {
             system("cls");
+            printf("\033[0;33m");
             for (int i = MENU_LEFT; i <= MENU_RIGHT; i++)
             {
                 gotoXY(i, MENU_TOP);
-                printf("%c", 219);
+                printf("█");
                 gotoXY(i, MENU_BOTTOM);
-                printf("%c", 219);
+                printf("█");
             }
 
             for (int i = MENU_TOP; i <= MENU_BOTTOM; i++)
             {
                 gotoXY(MENU_LEFT, i);
-                printf("%c", 219);
+                printf("█");
                 gotoXY(MENU_RIGHT, i);
-                printf("%c", 219);
+                printf("█");
             }
 
             for (int i = MENU_LEFT + 2; i < MENU_RIGHT - 1; i++)
             {
                 gotoXY(i, MENU_TOP + 1);
-                printf("%c", 247);
+                printf("≈");
             }
 
             for (int i = MENU_LEFT + 2; i < MENU_RIGHT - 1; i++)
             {
                 gotoXY(i, MENU_BOTTOM - 1);
-                printf("%c", 247);
+                printf("≈");
             }
 
             for (int i = MENU_LEFT + 10; i < MENU_RIGHT - 9; i++)
             {
                 gotoXY(i, MENU_TOP + 4);
-                printf("%c", 254);
+                printf("■");
             }
 
             for (int i = MENU_LEFT + 12; i < MENU_RIGHT - 11; i++)
@@ -202,6 +203,7 @@ int main(void)
             }
         }
         system("cls");
+        printf("\033[0m");
 
         // Wall
         printWall();
@@ -214,7 +216,7 @@ int main(void)
 
         coordinate food = foodPosition();
         gotoXY(food.x, food.y);
-        printf("\033[0;36m");
+        printf("\033[0;37m");
         printf("❀");
 
         printGate(gate1);
@@ -247,7 +249,7 @@ int main(void)
 
                 food = foodPosition();
                 gotoXY(food.x, food.y);
-                printf("\033[0;36m");
+                printf("\033[0;37m");
                 printf("❀");
             }
 
@@ -371,7 +373,7 @@ void _case_ghost_(coordinate food, ghost ghost_prime)
     if(food.x == ghost_prime.x && food.y == ghost_prime.y)
     {
         gotoXY(food.x, food.y);
-        printf("\033[0;36m");
+        printf("\033[0;37m");
         printf("❀");
     }
 
@@ -387,7 +389,7 @@ void printGhost1(ghost *ghost_prime, coordinate food)
     }
 
     gotoXY(ghost_prime->x, ghost_prime->y);
-    printf("☻");
+    printf("\033[1;31m☻\033[0m");
     gotoXY(ghost_prime->x, ghost_prime->y);
     printf(" ");
     _case_ghost_(food, *ghost_prime);
@@ -400,7 +402,7 @@ void printGhost1(ghost *ghost_prime, coordinate food)
     }   
 
     gotoXY(ghost_prime->x, ghost_prime->y);
-    printf("☻");
+    printf("\033[1;31m☻\033[0m");
     ghost_prime->wait();
 }
 
@@ -414,7 +416,7 @@ void printGhost2(ghost *ghost_prime, coordinate food)
     }
 
     gotoXY(ghost_prime->x, ghost_prime->y);
-    printf("☻");
+    printf("\033[1;31m☻\033[0m");
     gotoXY(ghost_prime->x, ghost_prime->y);
     printf(" ");
     _case_ghost_(food, *ghost_prime);
@@ -428,7 +430,7 @@ void printGhost2(ghost *ghost_prime, coordinate food)
         ghost_prime->x++;
     }   
     gotoXY(ghost_prime->x, ghost_prime->y);
-    printf("☻");
+    printf("\033[1;31m☻\033[0m");
 }
 
 void printGhost3(ghost *ghost_prime, coordinate food, int top, int bottom, int left, int right)
@@ -471,7 +473,7 @@ void printGhost3(ghost *ghost_prime, coordinate food, int top, int bottom, int l
             break;
     }
     gotoXY(ghost_prime->x, ghost_prime->y);
-    printf("☻");
+    printf("\033[1;31m☻\033[0m");
 }
 
 
@@ -546,6 +548,7 @@ coordinate foodPosition(void)
 void point(void)
 {
     gotoXY(RIGHT_WALL + 5, TOP_WALL + 2);
+    printf("\033[1;33m"); 
     printf("POINTS: %i", pts);
 }
 
