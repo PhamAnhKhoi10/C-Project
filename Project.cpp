@@ -593,7 +593,11 @@ bool lose(coordinate player)
     {
         return false;
     }
-    if (player.x == ghost7.x && player.y == ghost7.y)
+    if (player.x == ghost5.x && player.y == ghost5.y)
+    {
+        return false;
+    }
+    if (player.x == ghost6.x && player.y == ghost6.y)
     {
         return false;
     }
