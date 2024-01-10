@@ -16,7 +16,7 @@
 #define LEFT_WALL 3
 #define RIGHT_WALL 63
 #define LOSE false
-#define WIN 1
+#define WIN 10
 #define KEY_NONE -1
 
 typedef struct
@@ -235,14 +235,14 @@ int main(void)
                 printf("❀");
             }
 
-            // if (lose(player) == LOSE)
-            // {
-            //     system("cls");
-            //     printf("GAME OVER\n");
-            //     printf("Press any key to continue...");
-            //     getchar();
-            //     break;
-            // }
+            if (lose(player) == LOSE)
+            {
+                system("cls");
+                printf("GAME OVER\n");
+                printf("Press any key to continue...");
+                getchar();
+                break;
+            }
 
             // Win
             if (pts == WIN)
