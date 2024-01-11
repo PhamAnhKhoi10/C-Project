@@ -197,7 +197,7 @@ int main(void)
                 default:
                     system("cls");
                     printf("Invalid choice\n");
-                    printf("Press any key to continue...");
+                    printf("Press ENTER to continue...");
                     getchar();
                     getchar();
             }
@@ -257,7 +257,7 @@ int main(void)
             {
                 system("cls");
                 printf("GAME OVER\n");
-                printf("Press any key to continue...");
+                printf("Press ENTER to continue...");
                 getchar();
                 pts = 0;
                 break;
@@ -276,7 +276,7 @@ int main(void)
         while(congratulation)
         {
             printf("CONGRATULATION\n");
-            printf("Press any key to continue...");
+            printf("Press ENTER to continue...");
             getchar();
             congratulation = false;
         }
@@ -689,13 +689,12 @@ void intruction()
 {
     system("cls");
     printf("Instruction\n\n");
-    printf("KHOI NEEDS 10 FLOWERS TO GIVE TO HIS CRUSH, HELP HIM TO COLLECT THEM\n\n");
     printf("Press \"a\" to move left\n");
     printf("Press \"d\" to move right\n");
     printf("Press \"w\" to move up\n");
     printf("Press \"s\" to move down\n\n");
     printf("There are four teleport gates in the game, use them to switch your position\n");
-    // printf("You have to collect the food. When you reach 10 points, you will win\n");
+    printf("You have to collect the food. When you reach 10 points, you will win\n");
     printf("If you touch the ghost or the wall and the barrier, you will lose\n\n");
     printf("Good luck!\n\n");
     printf("Press ENTER to continue...");
