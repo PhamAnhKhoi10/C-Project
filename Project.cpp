@@ -259,6 +259,7 @@ int main(void)
                 printf("GAME OVER\n");
                 printf("Press any key to continue...");
                 getchar();
+                pts = 0;
                 break;
             }
 
