@@ -4,8 +4,6 @@
 #include <stdbool.h>
 #include <conio.h>
 #include <Windows.h>
-#include <chrono>
-#include <thread>
 
 #define MENU_TOP 2 
 #define MENU_BOTTOM 22
@@ -36,7 +34,7 @@ public:
 
     void wait(void)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(17));
+        Sleep(17);
     }
 };
 
@@ -270,12 +268,13 @@ int main(void)
                 congratulation = true;
                 pts = 0;
                 play_game = false;
+                break;
             }
         }
 
         while(congratulation)
         {
-            printf("CONGRATULATION\n");
+            printf("CONGRATULATION\nYOU WIN\n\n");
             printf("Press ENTER to continue...");
             getchar();
             congratulation = false;
@@ -730,7 +729,4 @@ void noCursorType()
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
 }
 
-// void setTextColor(int color)
-// {
-//     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
-// }
+
